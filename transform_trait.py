@@ -11,24 +11,26 @@ def informationValue(data, dictionary):
 
 
 
-def traitTransform(df, trait, categoricals):
-    # This function will return the binned trait for the training set and also save dictionaries, to look up
-    #woes and bins for the test set
+def traitTransform(train, trait, categoricals):
+    # This function will return the binned trait for the training set and also save a trait dictionary, to look up
+    #bin labels and cut off values for the test set
 
     #call train set data
-    data = df[:]
+    data = train[:]
 
     #this will be a dictionary of all the qualities necessary qualities defining a trait
-    #example qualities are "kind" (categorical or WE) and  "WE" which describes what to transform the values to
     attr_dict = {}
 
-
+    #an array of values corresponding to various applications
     vals = data[trait]
+
     # percentage of values that are not null and not 0
     percent = float(len(data[trait].dropna()[vals.dropna() != 0])) / data.shape[0]
+
     #this will be the series of values that I build, associated with each application.
     new_series = []
-    # cap number of buckets at 15.
+
+    #cap number of buckets at 15.
     if percent > .45:
         num_buckets = 15
     else:
@@ -39,7 +41,7 @@ def traitTransform(df, trait, categoricals):
         categoricals.append(trait)
         if num_buckets ==0:
             attr_dict['kind'] = 'less_categorical'
-            # make three buckets- zero, null, and numeric - this will be categoric
+            # make three buckets- zero, null, and numeric - this will be categorical
             for val in vals:
 
                 try:
@@ -54,6 +56,7 @@ def traitTransform(df, trait, categoricals):
             return new_series, attr_dict, categoricals
 
         else:
+            #make 4 buckets, null, 0, less than median, and more than median
             median = vals.dropna()[vals.dropna() != 0].median()
             attr_dict['kind'] = 'more_categorical'
             attr_dict['median'] = median
@@ -73,6 +76,8 @@ def traitTransform(df, trait, categoricals):
         return new_series, attr_dict, categoricals
 
     else:
+        #a weight of evidence transformation will be performed
+
         #array of the percentiles of the data. E.G. if 4 buckets qualify, buckets are [0th percentile, 25th percentile, 50th percentile, 75th percentile]
         ptiles = [vals.dropna()[vals.dropna() != 0].quantile(x) for x in np.linspace(0, 1 - ((float(1)) / num_buckets), num_buckets)]
 
@@ -108,11 +113,12 @@ def traitTransform(df, trait, categoricals):
                     attr_dict['counts'][new_series[-1]] = [0, 1]
         array = []
 
+        #we may need to group buckets, this is why we make a nested list of bucket number, values
         for key, value in attr_dict['counts'].iteritems():
             temp = [key, value]
             array.append(temp)
         #this saves an array of the appropriate bin name and the value of goods and bads in it
-        array.sort(reverse=True)
+        array.sort()
 
         for i, bin in enumerate(array):
             # if there are no goods (or no bads) in a bucket, we need to change it
@@ -128,13 +134,13 @@ def traitTransform(df, trait, categoricals):
                     new_bin[1][1] += bin[1][1]
                 # have to fix this
                 new_series.replace(bin[0], new_bin[0], inplace=True)
-                attr_dict['counts'][new_bin[0]] +=   attr_dict['counts'][bin[0]]
-                attr_dict['counts'][new_bin[0]] += attr_dict['counts'][bin[0]]
-                #get rid of this value from the dictionary
+                attr_dict['counts'][new_bin[0]][0] +=   attr_dict['counts'][bin[0]][0]
+                attr_dict['counts'][new_bin[0]][1] += attr_dict['counts'][bin[0]][1]
+
+                #get rid of this value from the dictionary, since it won't be used.
                 attr_dict['counts'].pop(bin[0])
             else:
                 pass
-        attr_dict['counts'] = {}
 
         for index in attr_dict['counts']:
             if index in [-9700, -5]:

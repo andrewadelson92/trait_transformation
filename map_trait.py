@@ -62,21 +62,26 @@ def traitMap(test, trait, trait_dict):
     else:
         #otherwise, it is a weight of evidence transformation
         woe = trait_dict['woe']
-        indices = trait_dict['ind_min']
+        #create a list [[bucket, percentile value], ...]
+        dictlist = []
+        for key, value in trait_dict['ind_min'].iteritems():
+            temp = [key, value]
+            dictlist.append(temp)
+        dictlist.sort(lambda x: x[1], reverse=True)
         for val in series:
             try:
                 int(val)
                 if val == 0:
                     new_series.append(woe[-5])
                 else:
-                    i = len(indices) - 1
-                    while val < indices[i][1]:
+                    i = len(dictlist) - 1
+                    while val < dictlist[i][1]:
                         i -= 1
-                    new_series.append(woe[indices[i][0]])
+                    new_series.append(woe[dictlist[i][0]])
             except:
                 new_series.append(woe[-9700])
         return new_series
 
 
-    return new_series
+
 
