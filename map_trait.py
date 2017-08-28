@@ -11,7 +11,7 @@ def traitMap(test, trait, trait_dict):
     series = data[trait]
     new_series = []
 
-    #if 
+    #if we only have room for 3 categories, then the work is easy
     if trait_dict['kind'] == 'less_categorical':
         for val in series:
             try:
@@ -23,6 +23,7 @@ def traitMap(test, trait, trait_dict):
             except:
                 new_series.append(-9700)
         return new_series
+    #if we have room for four categories, then the work is slightly harder
     elif trait_dict['kind'] == 'more_categorical':
         #if it has 1 bucket, we can add another indicator, greater than and less than median
         for val in series:
@@ -37,6 +38,7 @@ def traitMap(test, trait, trait_dict):
             except:
                 new_series.append(-9700)
         return new_series
+    #if the column is categorical, determined from ptiles, then do this function
     elif trait_dict['kind'] == 'ptile_categorical':
         dictlist = []
         for key, value in trait_dict['ind_min'].iteritems():
@@ -68,9 +70,9 @@ def traitMap(test, trait, trait_dict):
                     new_series.append(woe[-5])
                 else:
                     i = len(indices) - 1
-                    while val < indices[i]:
+                    while val < indices[i][1]:
                         i -= 1
-                    new_series.append(woe[indices[i]])
+                    new_series.append(woe[indices[i][0]])
             except:
                 new_series.append(woe[-9700])
         return new_series
