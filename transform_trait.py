@@ -149,10 +149,12 @@ def traitTransform(train, trait, categoricals):
             else:
                 attr_dict['ind_min'][index] = ptiles[index]
         if len(attr_dict['counts']) < 4:
+            #if we only have 3<= bins now, it is categorical
             attr_dict['kind'] = 'ptile_categorical'
             categoricals.append(trait)
             return new_series, attr_dict, categoricals
         else:
+            #otherwise, it is a weight of evidence transformation, binning things into null, zeroes, and percentiles
             attr_dict['kind'] = 'ptile_woe'
             attr_dict['woe'] = {}
             for index in attr_dict['counts']:
