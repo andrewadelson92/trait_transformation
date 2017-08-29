@@ -152,7 +152,7 @@ def traitTransform(train, trait, categoricals):
                 attr_dict['ind_min'][index] = ptiles[index]
 
         if len(attr_dict['counts']) <= 3:
-            # if we only have <=3 bins now, or there is insufficient data in a bin, then make it a categorical
+            # if we only have 3< bins now, or there is insufficient data in a bin, then make it a categorical
             attr_dict['kind'] = 'ptile_categorical'
             categoricals.append(trait)
             return new_series, attr_dict, categoricals
