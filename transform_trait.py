@@ -170,5 +170,3 @@ def traitTransform(train, trait, categoricals):
             new_series = pd.DataFrame(new_series)
             new_series[0] = new_series[0].map(attr_dict['woe'])
             return list(new_series[0]), attr_dict, categoricals
-
-        return new_series, attr_dict, categoricals

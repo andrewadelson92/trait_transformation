@@ -20,22 +20,25 @@ def matrixTransformation(df, traits):
     dict_traits = {}
 
     # transforming train applications
-    print 'transform'
+
     for trait in traits:
         train[trait], dict_traits[trait], categoricals = tt.traitTransform(train, trait, categoricals)
 
     train = pd.get_dummies(train, columns=categoricals)
-    print 'map'
+
+    ivs = []
+    for trait in dict_traits:
+        if 'iv' in dict_traits[trait]:
+            ivs.append([trait, dict_traits[trait]['iv']])
+        else:
+            pass
     # mapping test applications
     for trait in traits:
         trait_dict = dict_traits[trait]
         test[trait] = mt.traitMap(test, trait, trait_dict)
 
     test = pd.get_dummies(test, columns=categoricals)
-    ivs = []
-    for trait in dict_traits:
-        if 'iv' in trait:
-            ivs.append([trait, trait['iv']])
+
 
     badcols = [x for x in train.columns if x not in test.columns]
     train.drop(badcols, axis=1, inplace=True)
@@ -45,6 +48,7 @@ def matrixTransformation(df, traits):
 if __name__ == '__ main__':
     cols = [x for x in df.columns if 'SUCI0' in x]
     train,test = matrixTransformation(df, cols)
+
     print train.head()
 
 
