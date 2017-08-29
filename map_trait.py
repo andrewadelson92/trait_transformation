@@ -44,16 +44,17 @@ def traitMap(test, trait, trait_dict):
         for key, value in trait_dict['ind_min'].iteritems():
             temp = [key, value]
             dictlist.append(temp)
-        dictlist.sort(lambda x: x[1], reverse=True)
+        dictlist.sort()
+        dictlist = dictlist[::-1]
         for val in series:
             try:
                 int(val)
                 if val == 0:
                     new_series.append(-5)
                 else:
-                    i = len(dictlist)
+                    i = 0
                     while val < dictlist[i][1]:
-                        i -= 1
+                        i += 1
                     new_series.append(dictlist[i][0])
 
             except:
@@ -67,19 +68,23 @@ def traitMap(test, trait, trait_dict):
         for key, value in trait_dict['ind_min'].iteritems():
             temp = [key, value]
             dictlist.append(temp)
-        dictlist.sort(lambda x: x[1], reverse=True)
+        dictlist.sort()
+        dictlist = dictlist[::-1]
         for val in series:
             try:
                 int(val)
                 if val == 0:
                     new_series.append(woe[-5])
                 else:
-                    i = len(dictlist) - 1
+                    i = 0
                     while val < dictlist[i][1]:
-                        i -= 1
+                        i += 1
                     new_series.append(woe[dictlist[i][0]])
             except:
-                new_series.append(woe[-9700])
+                try:
+                    new_series.append(woe[-9700])
+                except:
+                    new_series.append(woe[dictlist[0][0]])
         return new_series
 
 

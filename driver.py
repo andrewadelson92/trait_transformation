@@ -5,8 +5,8 @@ import transform_trait as tt
 import map_trait as mt
 
 df = pd.read_csv("C:\Users\\aadelson\Desktop\loan_docs\\" + 'apr_2017.csv')
-def matrixTransformation(data, traits):
-    print 'hi'
+def matrixTransformation(df, traits):
+    data = df[:]
     #This function transforms a train set and maps a test set to the fitted transformation
     categoricals = []
     train_size = .8
@@ -34,7 +34,6 @@ def matrixTransformation(data, traits):
 if __name__ == '__ main__':
     cols = [x for x in df.columns if 'SUCI0' in x]
     train,test = matrixTransformation(df, cols)
-    print 'hi'
     print train.head()
 
 
